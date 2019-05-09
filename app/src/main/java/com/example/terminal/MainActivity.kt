@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.functions.FirebaseFunctions
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var intentFilters: Array<IntentFilter>
     lateinit var token: TokenClass.Token
     lateinit var functions: FirebaseFunctions
+    lateinit var string: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         }catch (e: IntentFilter.MalformedMimeTypeException){
             Log.e(this.toString(),e.message)
         }
+        string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1NTc0MjE2NzIxODAiLCJ1aWQiOiJjZDB1S2QxdGJWWjJ1bktqN2Y0MmJacEpDdzUyIiwidXNhZ2VzIjo1LCJpYXQiOjE1NTc0MjE2NzJ9.8zSQIsCX_MPkoSOk200TEvqPoCpUYjRB3AmVB_RI3c0"
+        useToken()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -66,28 +70,31 @@ class MainActivity : AppCompatActivity() {
                 if (result.equals("OK")){
                     text.text = getString(R.string.OK)
                     layout.setBackgroundColor(Color.GREEN)
-                    Thread.sleep(3000)
-                    layout.setBackgroundColor(Color.WHITE)
-                    text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)
+                    layout.setOnClickListener {
+                        layout.setBackgroundColor(Color.WHITE)
+                        text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)
+                    }
+
                 }
             }
             else{
                 text.text = getString(R.string.not_ok)
                 layout.setBackgroundColor(Color.RED)
-                Thread.sleep(3000)
+             /*   Thread.sleep(3000)
                 layout.setBackgroundColor(Color.WHITE)
-                text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)
+                text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)*/
             }
         }
     }
 
     private fun sendTokenToServer() : Task<String> {
         return functions.getHttpsCallable("useTicket")
-            .call(token).continueWith { task ->
+            .call(string).continueWith { task ->
                 val result = task.result!!.data as String
                 result
             }
     }
+
 
 
     override fun onResume() {
