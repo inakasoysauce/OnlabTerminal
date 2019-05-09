@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var intentFilters: Array<IntentFilter>
     lateinit var token: TokenClass.Token
     lateinit var functions: FirebaseFunctions
-    lateinit var string: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +41,10 @@ class MainActivity : AppCompatActivity() {
         }catch (e: IntentFilter.MalformedMimeTypeException){
             Log.e(this.toString(),e.message)
         }
-        string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1NTc0MjE2NzIxODAiLCJ1aWQiOiJjZDB1S2QxdGJWWjJ1bktqN2Y0MmJacEpDdzUyIiwidXNhZ2VzIjo1LCJpYXQiOjE1NTc0MjE2NzJ9.8zSQIsCX_MPkoSOk200TEvqPoCpUYjRB3AmVB_RI3c0"
-        useToken()
+        layout.setOnClickListener {
+            layout.setBackgroundColor(Color.WHITE)
+            text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -70,26 +71,20 @@ class MainActivity : AppCompatActivity() {
                 if (result.equals("OK")){
                     text.text = getString(R.string.OK)
                     layout.setBackgroundColor(Color.GREEN)
-                    layout.setOnClickListener {
-                        layout.setBackgroundColor(Color.WHITE)
-                        text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)
-                    }
 
                 }
+                else{
+                    text.text = getString(R.string.not_ok)
+                    layout.setBackgroundColor(Color.RED)
+                }
             }
-            else{
-                text.text = getString(R.string.not_ok)
-                layout.setBackgroundColor(Color.RED)
-             /*   Thread.sleep(3000)
-                layout.setBackgroundColor(Color.WHITE)
-                text.text = getString(R.string.rintse_ide_a_k_sz_l_ket)*/
-            }
+
         }
     }
 
     private fun sendTokenToServer() : Task<String> {
         return functions.getHttpsCallable("useTicket")
-            .call(string).continueWith { task ->
+            .call(token.token).continueWith { task ->
                 val result = task.result!!.data as String
                 result
             }
